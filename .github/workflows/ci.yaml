@@ -137,7 +137,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [ build-armv7, build-aarch64, build-amd64 ]
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
