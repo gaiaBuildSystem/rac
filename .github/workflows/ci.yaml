@@ -15,7 +15,7 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/rac-ci:a190170
+      image: ghcr.io/torizon/rac-ci:a190170
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
