@@ -132,4 +132,47 @@ jobs:
           name: rac-amd64
           path: target/x86_64-unknown-linux-musl/release/rac
 
-# TODO Write release step so we can reuse binaries from previous steps to create release
+  release:
+    name: Release
+    runs-on: ubuntu-24.04
+    needs: [ build-armv7, build-aarch64, build-amd64 ]
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download armv7 binary
+        uses: actions/download-artifact@v4
+        with:
+          name: rac-armv7
+          path: artifacts/armv7
+
+      - name: Download aarch64 binary
+        uses: actions/download-artifact@v4
+        with:
+          name: rac-aarch64
+          path: artifacts/aarch64
+
+      - name: Download amd64 binary
+        uses: actions/download-artifact@v4
+        with:
+          name: rac-amd64
+          path: artifacts/amd64
+
+      - name: Rename binaries
+        run: |
+          mv artifacts/armv7/rac artifacts/armv7/rac-armv7
+          mv artifacts/aarch64/rac artifacts/aarch64/rac-aarch64
+          mv artifacts/amd64/rac artifacts/amd64/rac-amd64
+
+      - name: Create GitHub release with assets
+        run: |
+          VERSION=$(cat VERSION)
+          gh repo set-default gaiaBuildSystem/rac
+          gh release create $VERSION \
+            --target main \
+            -t "PhobOS rac $VERSION" \
+            -n "PhobOS rac $VERSION" \
+            artifacts/armv7/rac-armv7 \
+            artifacts/aarch64/rac-aarch64 \
+            artifacts/amd64/rac-amd64
